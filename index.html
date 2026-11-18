@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ремонти – регистър</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#1a1d23;--mu:#667085;--bd:#dfe3ea;--ac:#1d6fe0;--acx:#fff;--dg:#c8372d}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1d2026;--tx:#eceef2;--mu:#98a0ae;--bd:#2f3440;--ac:#5b9bff;--acx:#0b1220;--dg:#ff7b70;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+label{display:block;font-size:.8rem;color:var(--mu);margin-bottom:3px}
+input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+input:focus,textarea:focus{outline:2px solid var(--ac);border-color:transparent}
+textarea{min-height:70px;resize:vertical}
+.full{grid-column:1/-1}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+button.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button.del{color:var(--dg)}
+button.sm{padding:5px 10px;font-size:.85rem}
+button:disabled{opacity:.6;cursor:wait}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.search{font-size:1.1rem;padding:12px}
+.vh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:8px}
+.plate{font-weight:800;font-size:1.2rem;letter-spacing:.06em;border:2px solid var(--tx);border-radius:6px;padding:1px 10px}
+.mu{color:var(--mu);font-size:.9rem}
+.rep{border-top:1px solid var(--bd);padding:10px 0}
+.rt{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.km{font-weight:700;color:var(--ac)}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:999px;padding:1px 9px;font-size:.85rem;margin:2px 4px 0 0}
+.warn{color:var(--dg);font-size:.8rem;min-height:1em;margin-top:3px}
+.empty{color:var(--mu);text-align:center;padding:24px}
+pre{white-space:pre-wrap;margin:4px 0 0;font:inherit}
+.sp{flex:1}
+#login{max-width:380px;margin:12vh auto 0}
+.err{color:var(--dg);margin-top:8px;min-height:1.2em}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ВИЖТЕ ИНСТРУКЦИИТЕ: сложете вашите стойности от Supabase → Project Settings → API -->
+<main id="login" hidden>
+  <div class="card">
+    <h1>🔧 Вход</h1>
+    <label for="em">Имейл</label><input id="em" type="email" autocomplete="username">
+    <label for="pw" style="margin-top:10px">Парола</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="bar"><button class="pri" id="in">Влез</button></div>
+    <div class="err" id="lerr"></div>
+  </div>
+</main>
+
+<main id="app" hidden>
+<div class="bar" style="margin-top:0"><h1 style="margin:0">🔧 Регистър на ремонтите</h1><span class="sp"></span><button class="sm" id="out">Изход</button></div>
+
+<div class="card" style="margin-top:14px">
+  <label for="q">Търсене по рег. номер или VIN</label>
+  <input id="q" class="search" type="search" placeholder="напр. CB1234AB или WVWZZZ…" autocomplete="off">
+  <div class="mu" id="stat" style="margin-top:6px"></div>
+</div>
+
+<div class="card">
+  <strong id="ft">Нов ремонт</strong>
+  <div class="row" style="margin-top:10px">
+    <div><label for="plate">Рег. номер</label><input id="plate" placeholder="CB1234AB" autocapitalize="characters"><div class="warn" id="wp"></div></div>
+    <div><label for="vin">VIN (17 знака)</label><input id="vin" maxlength="20" autocapitalize="characters"><div class="warn" id="wv"></div></div>
+    <div><label for="car">Марка / модел</label><input id="car" placeholder="VW Golf 1.9 TDI"></div>
+    <div><label for="date">Дата</label><input id="date" type="date"></div>
+    <div><label for="km">Пробег (км)</label><input id="km" type="number" min="0" inputmode="numeric"></div>
+    <div><label for="cost">Цена (лв.)</label><input id="cost" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="full"><label for="parts">Какво е сменено (по една част на ред)</label><textarea id="parts" placeholder="Масло 5W30 5л&#10;Маслен филтър&#10;Накладки предни"></textarea></div>
+    <div class="full"><label for="notes">Бележки</label><textarea id="notes"></textarea></div>
+  </div>
+  <div class="bar">
+    <button class="pri" id="save">Запази</button>
+    <button id="cancel" hidden>Отказ</button>
+    <span class="err" id="serr"></span>
+  </div>
+</div>
+
+<div id="list"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+// ===== НАСТРОЙКИ =====
+var SUPABASE_URL="https://hqrqptbbgikrcrteujck.supabase.co";
+var SUPABASE_KEY="sb_publishable_4VEZCukT9Q1jyydXHDugyg_JNloQTj-";
+// =====================
+
+var $=function(i){return document.getElementById(i)};
+var db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var data=[], editId=null;
+
+var CYR={"А":"A","В":"B","Е":"E","К":"K","М":"M","Н":"H","О":"O","Р":"P","С":"C","Т":"T","У":"Y","Х":"X"};
+function normPlate(s){return (s||"").toUpperCase().replace(/[\s\-]/g,"").replace(/[А-Я]/g,function(c){return CYR[c]||c})}
+function normVin(s){return (s||"").toUpperCase().replace(/\s/g,"")}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function money(n){return n==null||n===""?"":Number(n).toFixed(2)+" лв."}
+function km(n){return n==null||n===""?"":Number(n).toLocaleString("bg-BG")+" км"}
+function fdate(d){if(!d)return "";var p=d.split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:d}
+var plateOk=function(p){return /^[A-Z]{1,2}\d{4}[A-Z]{2}$/.test(p)};
+var vinOk=function(v){return /^[A-HJ-NPR-Z0-9]{17}$/.test(v)};
+
+function checkFields(){
+  var p=normPlate($("plate").value), v=normVin($("vin").value);
+  $("wp").textContent=p&&!plateOk(p)?"Необичаен формат на номер (прието е).":"";
+  $("wv").textContent=v&&!vinOk(v)?"VIN обикновено е 17 знака, без I, O, Q.":"";
+}
+function clearForm(){
+  ["plate","vin","car","km","cost","parts","notes"].forEach(function(i){$(i).value=""});
+  $("date").value=new Date().toISOString().slice(0,10);
+  editId=null;$("ft").textContent="Нов ремонт";$("cancel").hidden=true;$("serr").textContent="";checkFields();
+}
+
+async function loadAll(){
+  var r=await db.from("repairs").select("*").order("date",{ascending:false}).limit(5000);
+  if(r.error){$("list").innerHTML='<div class="card empty">Грешка при зареждане: '+esc(r.error.message)+'</div>';return}
+  data=r.data||[];render();
+}
+
+async function save(){
+  var p=normPlate($("plate").value), v=normVin($("vin").value);
+  if(!p&&!v){$("serr").textContent="Въведете рег. номер или VIN.";return}
+  var rec={
+    plate:p||null,vin:v||null,car:$("car").value.trim()||null,date:$("date").value||null,
+    km:$("km").value===""?null:parseInt($("km").value,10),
+    cost:$("cost").value===""?null:parseFloat($("cost").value),
+    parts:$("parts").value.trim()||null,notes:$("notes").value.trim()||null
+  };
+  var b=$("save");b.disabled=true;$("serr").textContent="";
+  var r=editId?await db.from("repairs").update(rec).eq("id",editId):await db.from("repairs").insert(rec);
+  b.disabled=false;
+  if(r.error){$("serr").textContent="Грешка: "+r.error.message;return}
+  clearForm();loadAll();
+}
+
+function edit(id){
+  var r=data.filter(function(x){return x.id===id})[0];if(!r)return;
+  editId=id;
+  $("plate").value=r.plate||"";$("vin").value=r.vin||"";$("car").value=r.car||"";$("date").value=r.date||"";
+  $("km").value=r.km==null?"":r.km;$("cost").value=r.cost==null?"":r.cost;$("parts").value=r.parts||"";$("notes").value=r.notes||"";
+  $("ft").textContent="Редакция на ремонт";$("cancel").hidden=false;checkFields();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+async function remove(id){
+  if(!confirm("Да се изтрие ли този запис?"))return;
+  var r=await db.from("repairs").delete().eq("id",id);
+  if(r.error){alert("Грешка: "+r.error.message);return}
+  loadAll();
+}
+
+function render(){
+  var q=$("q").value.trim(), qp=normPlate(q), qv=normVin(q);
+  // plate -> vin, so rows of the same car group together even if some lack the VIN
+  var p2v={};data.forEach(function(r){if(r.plate&&r.vin)p2v[r.plate]=r.vin});
+  var rows=data.filter(function(r){
+    if(!q)return true;
+    return (qp&&(r.plate||"").indexOf(qp)>-1)||(qv&&(r.vin||"").indexOf(qv)>-1);
+  });
+  var groups={},order=[];
+  rows.forEach(function(r){var k=r.vin||p2v[r.plate]||r.plate;if(!groups[k]){groups[k]=[];order.push(k)}groups[k].push(r)});
+  $("stat").textContent=data.length?("Автомобили: "+order.length+" · Ремонти: "+rows.length+(q?" (от "+data.length+")":"")):"";
+  if(!rows.length){$("list").innerHTML='<div class="card empty">'+(data.length?"Няма резултати.":"Още няма записи. Добавете първия ремонт по-горе.")+"</div>";return}
+  $("list").innerHTML=order.map(function(k){
+    var g=groups[k].slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||(b.km||0)-(a.km||0)});
+    var plate=g.map(function(r){return r.plate}).filter(Boolean)[0]||"", vin=g.map(function(r){return r.vin}).filter(Boolean)[0]||"", car=g.map(function(r){return r.car}).filter(Boolean)[0]||"";
+    var total=g.reduce(function(s,r){return s+(Number(r.cost)||0)},0);
+    var head='<div class="vh">'+(plate?'<span class="plate">'+esc(plate)+'</span>':'')+(vin?'<span class="mu">VIN: '+esc(vin)+'</span>':'')+(car?'<strong>'+esc(car)+'</strong>':'')+'<span class="sp"></span><span class="mu">'+g.length+' рем.'+(total?' · '+money(total):'')+'</span></div>';
+    var body=g.map(function(r){
+      var parts=r.parts?r.parts.split(/\n+/).filter(Boolean).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join(""):"";
+      return '<div class="rep"><div class="rt"><span>'+esc(fdate(r.date))+'</span>'+(r.km!=null?'<span class="km">'+esc(km(r.km))+'</span>':'')+(r.cost!=null?'<span class="mu">'+esc(money(r.cost))+'</span>':'')+'<span class="sp"></span><button class="sm" data-e="'+r.id+'">Редакция</button><button class="sm del" data-d="'+r.id+'">Изтрий</button></div>'+(parts?'<div>'+parts+'</div>':'')+(r.notes?'<pre class="mu">'+esc(r.notes)+'</pre>':'')+'</div>';
+    }).join("");
+    return '<div class="card">'+head+body+'</div>';
+  }).join("");
+}
+
+function show(loggedIn){$("login").hidden=loggedIn;$("app").hidden=!loggedIn;if(loggedIn){clearForm();loadAll()}}
+
+$("list").addEventListener("click",function(e){var t=e.target;if(t.dataset.e)edit(t.dataset.e);else if(t.dataset.d)remove(t.dataset.d)});
+$("q").addEventListener("input",render);
+$("plate").addEventListener("input",checkFields);
+$("vin").addEventListener("input",checkFields);
+$("save").addEventListener("click",save);
+$("cancel").addEventListener("click",clearForm);
+
+async function doLogin(){
+  $("lerr").textContent="";
+  var r=await db.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
+  if(r.error){$("lerr").textContent=r.error.message;return}
+  show(true);
+}
+$("in").addEventListener("click",doLogin);
+$("pw").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin()});
+$("out").addEventListener("click",async function(){await db.auth.signOut();data=[];show(false)});
+
+db.auth.getSession().then(function(r){show(!!(r.data&&r.data.session))});
+})();
+</script>
+</body>
+</html>
