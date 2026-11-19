@@ -3,124 +3,194 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ремонти – регистър</title>
+<title>Регистър на ремонтите</title>
 <style>
-:root{--bg:#f4f5f7;--card:#fff;--tx:#1a1d23;--mu:#667085;--bd:#dfe3ea;--ac:#1d6fe0;--acx:#fff;--dg:#c8372d}
-@media (prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1d2026;--tx:#eceef2;--mu:#98a0ae;--bd:#2f3440;--ac:#5b9bff;--acx:#0b1220;--dg:#ff7b70;color-scheme:dark}}
+:root{--bg:#f2f4f8;--card:#fff;--tx:#161a23;--mu:#6b7385;--bd:#e3e7ef;--in:#f7f8fb;--ac:#4f46e5;--acx:#fff;--acs:#eceaff;--dg:#d93a2f;--sh:0 1px 2px rgba(20,26,40,.06),0 6px 20px rgba(20,26,40,.06);--r:14px}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1015;--card:#171a22;--tx:#eceef4;--mu:#8e96a8;--bd:#262b37;--in:#10131a;--ac:#8087ff;--acx:#0d0f1c;--acs:#23264a;--dg:#ff7d72;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:900px;margin:0 auto;padding:16px}
-h1{font-size:1.4rem;margin:4px 0 14px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-label{display:block;font-size:.8rem;color:var(--mu);margin-bottom:3px}
-input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
-input:focus,textarea:focus{outline:2px solid var(--ac);border-color:transparent}
-textarea{min-height:70px;resize:vertical}
-.full{grid-column:1/-1}
-button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
-button.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
-button.del{color:var(--dg)}
-button.sm{padding:5px 10px;font-size:.85rem}
-button:disabled{opacity:.6;cursor:wait}
-.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
-.search{font-size:1.1rem;padding:12px}
-.vh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:8px}
-.plate{font-weight:800;font-size:1.2rem;letter-spacing:.06em;border:2px solid var(--tx);border-radius:6px;padding:1px 10px}
-.mu{color:var(--mu);font-size:.9rem}
-.rep{border-top:1px solid var(--bd);padding:10px 0}
-.rt{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
-.km{font-weight:700;color:var(--ac)}
-.tag{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:999px;padding:1px 9px;font-size:.85rem;margin:2px 4px 0 0}
-.warn{color:var(--dg);font-size:.8rem;min-height:1em;margin-top:3px}
-.empty{color:var(--mu);text-align:center;padding:24px}
-pre{white-space:pre-wrap;margin:4px 0 0;font:inherit}
-.sp{flex:1}
-#login{max-width:380px;margin:12vh auto 0}
-.err{color:var(--dg);margin-top:8px;min-height:1.2em}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);padding-top:env(safe-area-inset-top,0px)}
+.hd{display:flex;align-items:center;gap:12px;height:60px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--ac);color:var(--acx);display:grid;place-items:center;font-size:18px}
+.brand{font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.sp{flex:1}
+.who{color:var(--mu);font-size:.82rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:560px){.who{display:none}}
+
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 14px;border-radius:10px;transition:.15s}
+button:hover{border-color:var(--ac)}
+button:disabled{opacity:.6;cursor:wait}
+.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+.pri:hover{filter:brightness(1.08)}
+.ghost{background:transparent}
+.sm{padding:5px 10px;font-size:.82rem;border-radius:8px}
+.dg{color:var(--dg)}
+.dg:hover{border-color:var(--dg)}
+label{display:block;font-size:.76rem;font-weight:600;color:var(--mu);margin:0 0 5px;text-transform:uppercase;letter-spacing:.04em}
+input,textarea{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--in);color:var(--tx);font:inherit;transition:.15s}
+input:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--acs)}
+textarea{min-height:84px;resize:vertical}
+::placeholder{color:var(--mu);opacity:.6}
+
+.top{padding:18px 0 6px;display:flex;gap:10px}
+.sb{position:relative;flex:1}
+.sb svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mu)}
+.sb input{padding:14px 14px 14px 44px;font-size:1.05rem;border-radius:12px;background:var(--card);box-shadow:var(--sh);border-color:transparent}
+.add{padding:0 18px;border-radius:12px;white-space:nowrap}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 12px;font-size:.82rem;color:var(--mu)}
+.chip b{color:var(--tx)}
+
+.veh{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin-bottom:14px}
+.vh{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:14px}
+.plate{display:inline-flex;border:2px solid #14161c;border-radius:7px;background:#fff;color:#14161c;overflow:hidden}
+.plate i{font-style:normal;background:#1f4fb8;color:#fff;font-size:.58rem;font-weight:700;padding:3px 5px;display:flex;align-items:flex-end;letter-spacing:.04em}
+.plate span{padding:3px 12px;font:800 1.2rem/1.2 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.08em}
+.vn{font-weight:700;font-size:1.05rem}
+.vm{color:var(--mu);font-size:.8rem;font-family:ui-monospace,Menlo,Consolas,monospace}
+.vr{text-align:right;font-size:.8rem;color:var(--mu);line-height:1.3}
+.vr b{display:block;color:var(--tx);font-size:.95rem}
+
+.rep{position:relative;margin-left:6px;padding:0 0 16px 22px;border-left:2px solid var(--bd)}
+.rep:last-of-type{border-left-color:transparent;padding-bottom:4px}
+.rep::before{content:"";position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--ac);border:3px solid var(--card);box-shadow:0 0 0 1px var(--bd)}
+.rt{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.dt{font-weight:600}
+.km{background:var(--acs);color:var(--ac);font-weight:700;border-radius:8px;padding:2px 9px;font-size:.88rem}
+.cs{color:var(--mu);font-size:.9rem}
+.acts{display:flex;gap:6px}
+.parts{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--in);border:1px solid var(--bd);border-radius:8px;padding:2px 10px;font-size:.85rem}
+.nt{margin:8px 0 0;color:var(--mu);font-size:.88rem;white-space:pre-wrap}
+.vf{border-top:1px dashed var(--bd);padding-top:12px;margin-top:4px}
+
+.empty{text-align:center;color:var(--mu);padding:56px 16px}
+.empty .big{font-size:42px;margin-bottom:6px}
+
+dialog{border:none;border-radius:18px;padding:0;background:var(--card);color:var(--tx);width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(8,10,16,.55);backdrop-filter:blur(3px)}
+.dh{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd);font-weight:700;font-size:1.05rem}
+.db{padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.full{grid-column:1/-1}
+.df{display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid var(--bd);position:sticky;bottom:0;background:var(--card)}
+.warn{color:var(--dg);font-size:.76rem;min-height:1em;margin-top:4px}
+.err{color:var(--dg);font-size:.85rem}
+.x{padding:4px 10px;border:none;background:transparent;font-size:1.3rem;line-height:1;color:var(--mu)}
+
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lc{width:100%;max-width:380px;background:var(--card);border:1px solid var(--bd);border-radius:20px;box-shadow:var(--sh);padding:28px}
+.lc .logo{width:48px;height:48px;font-size:24px;margin-bottom:14px}
+.lc h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:-.02em}
+.lc p{margin:0 0 20px;color:var(--mu)}
+.lc button{width:100%;padding:12px;margin-top:16px}
+
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+#toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
 
-<!-- ВИЖТЕ ИНСТРУКЦИИТЕ: сложете вашите стойности от Supabase → Project Settings → API -->
-<main id="login" hidden>
-  <div class="card">
-    <h1>🔧 Вход</h1>
+<div id="login" hidden>
+  <div class="lc">
+    <div class="logo">🔧</div>
+    <h1>Регистър на ремонтите</h1>
+    <p>Влезте, за да продължите.</p>
     <label for="em">Имейл</label><input id="em" type="email" autocomplete="username">
-    <label for="pw" style="margin-top:10px">Парола</label><input id="pw" type="password" autocomplete="current-password">
-    <div class="bar"><button class="pri" id="in">Влез</button></div>
-    <div class="err" id="lerr"></div>
+    <label for="pw" style="margin-top:14px">Парола</label><input id="pw" type="password" autocomplete="current-password">
+    <button class="pri" id="in">Влез</button>
+    <div class="err" id="lerr" style="margin-top:10px;min-height:1.2em"></div>
   </div>
-</main>
-
-<main id="app" hidden>
-<div class="bar" style="margin-top:0"><h1 style="margin:0">🔧 Регистър на ремонтите</h1><span class="sp"></span><button class="sm" id="out">Изход</button></div>
-
-<div class="card" style="margin-top:14px">
-  <label for="q">Търсене по рег. номер или VIN</label>
-  <input id="q" class="search" type="search" placeholder="напр. CB1234AB или WVWZZZ…" autocomplete="off">
-  <div class="mu" id="stat" style="margin-top:6px"></div>
 </div>
 
-<div class="card">
-  <strong id="ft">Нов ремонт</strong>
-  <div class="row" style="margin-top:10px">
-    <div><label for="plate">Рег. номер</label><input id="plate" placeholder="CB1234AB" autocapitalize="characters"><div class="warn" id="wp"></div></div>
-    <div><label for="vin">VIN (17 знака)</label><input id="vin" maxlength="20" autocapitalize="characters"><div class="warn" id="wv"></div></div>
-    <div><label for="car">Марка / модел</label><input id="car" placeholder="VW Golf 1.9 TDI"></div>
+<div id="app" hidden>
+  <header><div class="wrap hd">
+    <div class="logo">🔧</div><div class="brand">Регистър на ремонтите</div>
+    <div class="sp"></div><div class="who" id="who"></div>
+    <button class="sm ghost" id="out">Изход</button>
+  </div></header>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="sb">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Търсене по рег. номер или VIN…" autocomplete="off">
+      </div>
+      <button class="pri add" id="new">+ Нов ремонт</button>
+    </div>
+    <div class="stats" id="stat"></div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <div class="dh"><span id="ft">Нов ремонт</span><span class="sp"></span><button class="x" id="x" aria-label="Затвори">×</button></div>
+  <div class="db">
+    <div><label for="plate">Рег. номер</label><input id="plate" placeholder="CB 1234 AB" autocapitalize="characters"><div class="warn" id="wp"></div></div>
+    <div><label for="vin">VIN</label><input id="vin" maxlength="20" placeholder="17 знака" autocapitalize="characters"><div class="warn" id="wv"></div></div>
+    <div><label for="make">Марка</label><input id="make" placeholder="VW"></div>
+    <div><label for="model">Модел</label><input id="model" placeholder="Golf 4 1.9 TDI"></div>
+    <div><label for="hp">Мощност (к.с.)</label><input id="hp" type="number" min="0" inputmode="numeric"></div>
     <div><label for="date">Дата</label><input id="date" type="date"></div>
     <div><label for="km">Пробег (км)</label><input id="km" type="number" min="0" inputmode="numeric"></div>
-    <div><label for="cost">Цена (евро)</label><input id="cost" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div><label for="price_own">Цена за мен (€)</label><input id="price_own" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div><label for="price_client">Цена за клиента (€)</label><input id="price_client" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div><label for="labor">Труд (€)</label><input id="labor" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div class="full"><label for="parts">Какво е сменено (по една част на ред)</label><textarea id="parts" placeholder="Масло 5W30 5л&#10;Маслен филтър&#10;Накладки предни"></textarea></div>
-    <div class="full"><label for="notes">Бележки</label><textarea id="notes"></textarea></div>
+    <div class="full"><label for="notes">Бележки</label><textarea id="notes" style="min-height:64px"></textarea></div>
   </div>
-  <div class="bar">
-    <button class="pri" id="save">Запази</button>
-    <button id="cancel" hidden>Отказ</button>
-    <span class="err" id="serr"></span>
-  </div>
-</div>
-
-<div id="list"></div>
-</main>
+  <div class="df"><button class="pri" id="save">Запази</button><button class="ghost" id="cancel">Отказ</button><span class="err" id="serr"></span></div>
+</dialog>
+<div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){
-// ===== НАСТРОЙКИ =====
+// ===== НАСТРОЙКИ – сложете вашите стойности =====
 var SUPABASE_URL="https://hqrqptbbgikrcrteujck.supabase.co";
 var SUPABASE_KEY="sb_publishable_4VEZCukT9Q1jyydXHDugyg_JNloQTj-";
-// =====================
+// ================================================
 
 var $=function(i){return document.getElementById(i)};
 var db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-var data=[], editId=null;
+var data=[], editId=null, dlg=$("dlg"), groupsCache={};
 
 var CYR={"А":"A","В":"B","Е":"E","К":"K","М":"M","Н":"H","О":"O","Р":"P","С":"C","Т":"T","У":"Y","Х":"X"};
 function normPlate(s){return (s||"").toUpperCase().replace(/[\s\-]/g,"").replace(/[А-Я]/g,function(c){return CYR[c]||c})}
 function normVin(s){return (s||"").toUpperCase().replace(/\s/g,"")}
+function fmtPlate(p){var m=/^([A-Z]{1,2})(\d{4})([A-Z]{2})$/.exec(p||"");return m?m[1]+" "+m[2]+" "+m[3]:p}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function money(n){return n==null||n===""?"":Number(n).toFixed(2)+" евро"}
-function km(n){return n==null||n===""?"":Number(n).toLocaleString("bg-BG")+" км"}
+function money(n){return Number(n).toLocaleString("bg-BG",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"}
+function km(n){return Number(n).toLocaleString("bg-BG")+" км"}
 function fdate(d){if(!d)return "";var p=d.split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:d}
 var plateOk=function(p){return /^[A-Z]{1,2}\d{4}[A-Z]{2}$/.test(p)};
 var vinOk=function(v){return /^[A-HJ-NPR-Z0-9]{17}$/.test(v)};
+function first(g,f){return g.map(function(r){return r[f]}).filter(Boolean)[0]||""}
+
+function num(id,int){var v=$(id).value;return v===""?null:(int?parseInt(v,10):parseFloat(v))}
+var tt;function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on")},2200)}
 
 function checkFields(){
   var p=normPlate($("plate").value), v=normVin($("vin").value);
-  $("wp").textContent=p&&!plateOk(p)?"Необичаен формат на номер (прието е).":"";
+  $("wp").textContent=p&&!plateOk(p)?"Необичаен формат (прието е).":"";
   $("wv").textContent=v&&!vinOk(v)?"VIN обикновено е 17 знака, без I, O, Q.":"";
 }
-function clearForm(){
-  ["plate","vin","car","km","cost","parts","notes"].forEach(function(i){$(i).value=""});
-  $("date").value=new Date().toISOString().slice(0,10);
-  editId=null;$("ft").textContent="Нов ремонт";$("cancel").hidden=true;$("serr").textContent="";checkFields();
+function openForm(pre){
+  pre=pre||{};
+  ["plate","vin","make","model","hp","km","price_own","price_client","labor","parts","notes"].forEach(function(i){$(i).value=pre[i]==null?"":pre[i]});
+  $("date").value=pre.date||new Date().toISOString().slice(0,10);
+  editId=pre.id||null;$("ft").textContent=editId?"Редакция на ремонт":"Нов ремонт";$("serr").textContent="";checkFields();
+  dlg.showModal();
+  if(!editId&&!pre.plate&&!pre.vin)$("plate").focus();else if(!editId)$("km").focus();
 }
+function closeForm(){dlg.close()}
 
 async function loadAll(){
   var r=await db.from("repairs").select("*").order("date",{ascending:false}).limit(5000);
-  if(r.error){$("list").innerHTML='<div class="card empty">Грешка при зареждане: '+esc(r.error.message)+'</div>';return}
+  if(r.error){$("list").innerHTML='<div class="empty">Грешка при зареждане: '+esc(r.error.message)+'</div>';return}
   data=r.data||[];render();
 }
 
@@ -128,36 +198,26 @@ async function save(){
   var p=normPlate($("plate").value), v=normVin($("vin").value);
   if(!p&&!v){$("serr").textContent="Въведете рег. номер или VIN.";return}
   var rec={
-    plate:p||null,vin:v||null,car:$("car").value.trim()||null,date:$("date").value||null,
+    plate:p||null,vin:v||null,make:$("make").value.trim()||null,model:$("model").value.trim()||null,hp:num("hp",true),date:$("date").value||null,
     km:$("km").value===""?null:parseInt($("km").value,10),
-    cost:$("cost").value===""?null:parseFloat($("cost").value),
+    price_own:num("price_own"),price_client:num("price_client"),labor:num("labor"),
     parts:$("parts").value.trim()||null,notes:$("notes").value.trim()||null
   };
   var b=$("save");b.disabled=true;$("serr").textContent="";
   var r=editId?await db.from("repairs").update(rec).eq("id",editId):await db.from("repairs").insert(rec);
   b.disabled=false;
   if(r.error){$("serr").textContent="Грешка: "+r.error.message;return}
-  clearForm();loadAll();
-}
-
-function edit(id){
-  var r=data.filter(function(x){return x.id===id})[0];if(!r)return;
-  editId=id;
-  $("plate").value=r.plate||"";$("vin").value=r.vin||"";$("car").value=r.car||"";$("date").value=r.date||"";
-  $("km").value=r.km==null?"":r.km;$("cost").value=r.cost==null?"":r.cost;$("parts").value=r.parts||"";$("notes").value=r.notes||"";
-  $("ft").textContent="Редакция на ремонт";$("cancel").hidden=false;checkFields();
-  window.scrollTo({top:0,behavior:"smooth"});
+  closeForm();toast("Запазено ✓");loadAll();
 }
 async function remove(id){
   if(!confirm("Да се изтрие ли този запис?"))return;
   var r=await db.from("repairs").delete().eq("id",id);
   if(r.error){alert("Грешка: "+r.error.message);return}
-  loadAll();
+  toast("Изтрито");loadAll();
 }
 
 function render(){
   var q=$("q").value.trim(), qp=normPlate(q), qv=normVin(q);
-  // plate -> vin, so rows of the same car group together even if some lack the VIN
   var p2v={};data.forEach(function(r){if(r.plate&&r.vin)p2v[r.plate]=r.vin});
   var rows=data.filter(function(r){
     if(!q)return true;
@@ -165,41 +225,67 @@ function render(){
   });
   var groups={},order=[];
   rows.forEach(function(r){var k=r.vin||p2v[r.plate]||r.plate;if(!groups[k]){groups[k]=[];order.push(k)}groups[k].push(r)});
-  $("stat").textContent=data.length?("Автомобили: "+order.length+" · Ремонти: "+rows.length+(q?" (от "+data.length+")":"")):"";
-  if(!rows.length){$("list").innerHTML='<div class="card empty">'+(data.length?"Няма резултати.":"Още няма записи. Добавете първия ремонт по-горе.")+"</div>";return}
+  groupsCache=groups;
+  var total=rows.reduce(function(s,r){return s+(Number(r.price_client)||0)+(Number(r.labor)||0)},0);
+  var own=rows.reduce(function(s,r){return s+(Number(r.price_own)||0)},0);
+  $("stat").innerHTML=data.length?'<span class="chip"><b>'+order.length+'</b> автомобила</span><span class="chip"><b>'+rows.length+'</b> ремонта'+(q?' от '+data.length:'')+'</span>'+(total?'<span class="chip">За клиенти <b>'+esc(money(total))+'</b></span>':'')+(own?'<span class="chip">Мои разходи <b>'+esc(money(own))+'</b></span>':''):"";
+  if(!rows.length){
+    $("list").innerHTML=data.length
+      ?'<div class="empty"><div class="big">🔍</div>Няма резултати за „'+esc(q)+'“.</div>'
+      :'<div class="empty"><div class="big">🚗</div>Още няма записи.<br>Натиснете „+ Нов ремонт“, за да добавите първия.</div>';
+    return;
+  }
   $("list").innerHTML=order.map(function(k){
     var g=groups[k].slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||(b.km||0)-(a.km||0)});
-    var plate=g.map(function(r){return r.plate}).filter(Boolean)[0]||"", vin=g.map(function(r){return r.vin}).filter(Boolean)[0]||"", car=g.map(function(r){return r.car}).filter(Boolean)[0]||"";
-    var total=g.reduce(function(s,r){return s+(Number(r.cost)||0)},0);
-    var head='<div class="vh">'+(plate?'<span class="plate">'+esc(plate)+'</span>':'')+(vin?'<span class="mu">VIN: '+esc(vin)+'</span>':'')+(car?'<strong>'+esc(car)+'</strong>':'')+'<span class="sp"></span><span class="mu">'+g.length+' рем.'+(total?' · '+money(total):'')+'</span></div>';
+    var plate=first(g,"plate"), vin=first(g,"vin"), car=[first(g,"make"),first(g,"model")].filter(Boolean).join(" "), hp=first(g,"hp");
+    var maxKm=g.reduce(function(m,r){return r.km!=null&&r.km>m?r.km:m},0);
+    var sum=g.reduce(function(s,r){return s+(Number(r.price_client)||0)+(Number(r.labor)||0)},0);
+    var head='<div class="vh">'+(plate?'<div class="plate"><i>BG</i><span>'+esc(fmtPlate(plate))+'</span></div>':'')
+      +'<div>'+(car?'<div class="vn">'+esc(car)+'</div>':'')+((vin||hp)?'<div class="vm">'+esc([hp?hp+" к.с.":"",vin].filter(Boolean).join(" · "))+'</div>':'')+'</div><span class="sp"></span>'
+      +'<div class="vr">'+(maxKm?'<b>'+esc(km(maxKm))+'</b>':'')+g.length+' рем.'+(sum?' · '+esc(money(sum)):'')+'</div></div>';
     var body=g.map(function(r){
       var parts=r.parts?r.parts.split(/\n+/).filter(Boolean).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join(""):"";
-      return '<div class="rep"><div class="rt"><span>'+esc(fdate(r.date))+'</span>'+(r.km!=null?'<span class="km">'+esc(km(r.km))+'</span>':'')+(r.cost!=null?'<span class="mu">'+esc(money(r.cost))+'</span>':'')+'<span class="sp"></span><button class="sm" data-e="'+r.id+'">Редакция</button><button class="sm del" data-d="'+r.id+'">Изтрий</button></div>'+(parts?'<div>'+parts+'</div>':'')+(r.notes?'<pre class="mu">'+esc(r.notes)+'</pre>':'')+'</div>';
+      return '<div class="rep"><div class="rt"><span class="dt">'+esc(fdate(r.date))+'</span>'+(r.km!=null?'<span class="km">'+esc(km(r.km))+'</span>':'')+(r.price_own!=null?'<span class="cs">За мен: '+esc(money(r.price_own))+'</span>':'')+(r.price_client!=null?'<span class="cs">Клиент: '+esc(money(r.price_client))+'</span>':'')+(r.labor!=null?'<span class="cs">Труд: '+esc(money(r.labor))+'</span>':'')
+        +'<span class="sp"></span><span class="acts"><button class="sm" data-e="'+r.id+'">Редакция</button><button class="sm dg" data-d="'+r.id+'">Изтрий</button></span></div>'
+        +(parts?'<div class="parts">'+parts+'</div>':'')+(r.notes?'<div class="nt">'+esc(r.notes)+'</div>':'')+'</div>';
     }).join("");
-    return '<div class="card">'+head+body+'</div>';
+    return '<div class="veh">'+head+body+'<div class="vf"><button class="sm" data-n="'+esc(k)+'">+ Нов ремонт за този автомобил</button></div></div>';
   }).join("");
 }
 
-function show(loggedIn){$("login").hidden=loggedIn;$("app").hidden=!loggedIn;if(loggedIn){clearForm();loadAll()}}
-
-$("list").addEventListener("click",function(e){var t=e.target;if(t.dataset.e)edit(t.dataset.e);else if(t.dataset.d)remove(t.dataset.d)});
+$("list").addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  if(t.dataset.e){var r=data.filter(function(x){return x.id===t.dataset.e})[0];if(r)openForm(r)}
+  else if(t.dataset.d)remove(t.dataset.d);
+  else if(t.dataset.n!=null){
+    var g=groupsCache[t.dataset.n]||[];
+    openForm({plate:first(g,"plate"),vin:first(g,"vin"),make:first(g,"make"),model:first(g,"model"),hp:first(g,"hp")});
+  }
+});
 $("q").addEventListener("input",render);
+$("new").addEventListener("click",function(){openForm()});
 $("plate").addEventListener("input",checkFields);
 $("vin").addEventListener("input",checkFields);
 $("save").addEventListener("click",save);
-$("cancel").addEventListener("click",clearForm);
+$("cancel").addEventListener("click",closeForm);
+$("x").addEventListener("click",closeForm);
+dlg.addEventListener("click",function(e){if(e.target===dlg)closeForm()});
 
+function show(session){
+  var on=!!session;$("login").hidden=on;$("app").hidden=!on;
+  if(on){$("who").textContent=(session.user&&session.user.email)||"";loadAll()}
+}
 async function doLogin(){
   $("lerr").textContent="";
   var r=await db.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
   if(r.error){$("lerr").textContent=r.error.message;return}
-  show(true);
+  show(r.data.session);
 }
 $("in").addEventListener("click",doLogin);
 $("pw").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin()});
-$("out").addEventListener("click",async function(){await db.auth.signOut();data=[];show(false)});
+$("out").addEventListener("click",async function(){await db.auth.signOut();data=[];show(null)});
 
-db.auth.getSession().then(function(r){show(!!(r.data&&r.data.session))});
+db.auth.getSession().then(function(r){show(r.data&&r.data.session)});
 })();
 </script>
 </body>
