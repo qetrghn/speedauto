@@ -55,9 +55,12 @@ textarea{min-height:84px;resize:vertical}
 .vr{text-align:right;font-size:.8rem;color:var(--mu);line-height:1.3}
 .vr b{display:block;color:var(--tx);font-size:.95rem}
 
-.rep{position:relative;margin-left:6px;padding:0 0 16px 22px;border-left:2px solid var(--bd)}
-.rep:last-of-type{border-left-color:transparent;padding-bottom:4px}
-.rep::before{content:"";position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--ac);border:3px solid var(--card);box-shadow:0 0 0 1px var(--bd)}
+.rep{background:var(--in);border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.rep .tag{background:var(--card)}
+.pr{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;margin-top:10px}
+.pr div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:6px 10px}
+.pr small{display:block;color:var(--mu);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}
+.pr b{font-size:.95rem}
 .rt{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
 .dt{font-weight:600}
 .km{background:var(--acs);color:var(--ac);font-weight:700;border-radius:8px;padding:2px 9px;font-size:.88rem}
@@ -175,6 +178,7 @@ function km(n){return Number(n).toLocaleString("bg-BG")+" км"}
 function fdate(d){if(!d)return "";var p=d.split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:d}
 var plateOk=function(p){return /^[A-Z]{1,2}\d{4}[A-Z]{2}$/.test(p)};
 var vinOk=function(v){return /^[A-HJ-NPR-Z0-9]{17}$/.test(v)};
+function prices(r){var a=[["За мен",r.price_own],["Клиент",r.price_client],["Труд",r.labor]].filter(function(x){return x[1]!=null});return a.length?'<div class="pr">'+a.map(function(x){return '<div><small>'+x[0]+'</small><b>'+esc(money(x[1]))+'</b></div>'}).join("")+'</div>':""}
 function first(g,f){return g.map(function(r){return r[f]}).filter(Boolean)[0]||""}
 
 function num(id,int){var v=$(id).value;return v===""?null:(int?parseInt(v,10):parseFloat(v))}
@@ -252,9 +256,9 @@ function render(){
       +'<div class="vr">'+(maxKm?'<b>'+esc(km(maxKm))+'</b>':'')+g.length+' рем.'+(sum?' · '+esc(money(sum)):'')+'</div></div>';
     var body=g.map(function(r){
       var parts=r.parts?r.parts.split(/\n+/).filter(Boolean).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join(""):"";
-      return '<div class="rep"><div class="rt"><span class="dt">'+esc(fdate(r.date))+'</span>'+(r.km!=null?'<span class="km">'+esc(km(r.km))+'</span>':'')+(r.price_own!=null?'<span class="cs">За мен: '+esc(money(r.price_own))+'</span>':'')+(r.price_client!=null?'<span class="cs">Клиент: '+esc(money(r.price_client))+'</span>':'')+(r.labor!=null?'<span class="cs">Труд: '+esc(money(r.labor))+'</span>':'')
+      return '<div class="rep"><div class="rt"><span class="dt">'+esc(fdate(r.date))+'</span>'+(r.km!=null?'<span class="km">'+esc(km(r.km))+'</span>':'')+''
         +'<span class="sp"></span><span class="acts"><button class="sm" data-e="'+r.id+'">Редакция</button><button class="sm dg" data-d="'+r.id+'">Изтрий</button></span></div>'
-        +(parts?'<div class="parts">'+parts+'</div>':'')+(r.notes?'<div class="nt">'+esc(r.notes)+'</div>':'')+'</div>';
+        +prices(r)+(parts?'<div class="parts">'+parts+'</div>':'')+(r.notes?'<div class="nt">'+esc(r.notes)+'</div>':'')+'</div>';
     }).join("");
     return '<div class="veh">'+head+body+'<div class="vf"><button class="sm" data-n="'+esc(k)+'">+ Нов ремонт за този автомобил</button></div></div>';
   }).join("");
