@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Регистър на ремонтите</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#f2f4f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1015" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ремонти">
 <style>
 :root{--bg:#f2f4f8;--card:#fff;--tx:#161a23;--mu:#6b7385;--bd:#e3e7ef;--in:#f7f8fb;--ac:#4f46e5;--acx:#fff;--acs:#eceaff;--dg:#d93a2f;--sh:0 1px 2px rgba(20,26,40,.06),0 6px 20px rgba(20,26,40,.06);--r:14px}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1015;--card:#171a22;--tx:#eceef4;--mu:#8e96a8;--bd:#262b37;--in:#10131a;--ac:#8087ff;--acx:#0d0f1c;--acs:#23264a;--dg:#ff7d72;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);color-scheme:dark}}
@@ -52,6 +60,8 @@ textarea{min-height:84px;resize:vertical}
 .plate i{font-style:normal;background:#1f4fb8;color:#fff;font-size:.58rem;font-weight:700;padding:3px 5px;display:flex;align-items:flex-end;letter-spacing:.04em}
 .plate span{padding:3px 12px;font:800 1.2rem/1.2 ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.08em}
 .vn{font-weight:700;font-size:1.05rem}
+.cu{font-size:.85rem;margin-top:4px}
+.cu a{color:var(--ac);text-decoration:none;font-weight:600}
 .vm{color:var(--mu);font-size:.8rem;font-family:ui-monospace,Menlo,Consolas,monospace}
 .vr{text-align:right;font-size:.8rem;color:var(--mu);line-height:1.3}
 .vr b{display:block;color:var(--tx);font-size:.95rem}
@@ -140,17 +150,19 @@ dialog::backdrop{background:rgba(8,10,16,.55);backdrop-filter:blur(3px)}
 <dialog id="dlg">
   <div class="dh"><span id="ft">Нов ремонт</span><span class="sp"></span><button class="x" id="x" aria-label="Затвори">×</button></div>
   <div class="db">
-    <div class="w"><label for="plate">Рег. номер</label><input id="plate" placeholder="CB 1234 AB" autocapitalize="characters"><div class="warn" id="wp"></div></div>
-    <div class="w"><label for="vin">VIN</label><input id="vin" maxlength="20" placeholder="17 знака" autocapitalize="characters"><div class="warn" id="wv"></div></div>
-    <div><label for="make">Марка</label><input id="make" placeholder="VW"></div>
-    <div><label for="model">Модел</label><input id="model" placeholder="Golf 4 1.9 TDI"></div>
+    <div class="w"><label for="plate">Рег. номер</label><input id="plate" autocapitalize="characters"><div class="warn" id="wp"></div></div>
+    <div class="w"><label for="vin">VIN</label><input id="vin" maxlength="20" autocapitalize="characters"><div class="warn" id="wv"></div></div>
+    <div><label for="customer_name">Име на клиента</label><input id="customer_name" autocomplete="off"></div>
+    <div><label for="customer_phone">Телефон</label><input id="customer_phone" type="tel" inputmode="tel" autocomplete="off"></div>
+    <div><label for="make">Марка</label><input id="make"></div>
+    <div><label for="model">Модел</label><input id="model"></div>
     <div><label for="hp">Мощност (к.с.)</label><input id="hp" type="number" min="0" inputmode="numeric"></div>
     <div><label for="date">Дата</label><input id="date" type="date"></div>
     <div><label for="km">Пробег (км)</label><input id="km" type="number" min="0" inputmode="numeric"></div>
     <div><label for="price_own">Цена за мен (€)</label><input id="price_own" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div><label for="price_client">Цена за клиента (€)</label><input id="price_client" type="number" min="0" step="0.01" inputmode="decimal"></div>
     <div><label for="labor">Труд (€)</label><input id="labor" type="number" min="0" step="0.01" inputmode="decimal"></div>
-    <div class="full"><label for="parts">Какво е сменено (по една част на ред)</label><textarea id="parts" placeholder="Масло 5W30 5л&#10;Маслен филтър&#10;Накладки предни"></textarea></div>
+    <div class="full"><label for="parts">Какво е сменено (по една част на ред)</label><textarea id="parts"></textarea></div>
     <div class="full"><label for="notes">Бележки</label><textarea id="notes" style="min-height:64px"></textarea></div>
   </div>
   <div class="df"><button class="pri" id="save">Запази</button><button class="ghost" id="cancel">Отказ</button><span class="err" id="serr"></span></div>
@@ -192,7 +204,7 @@ function checkFields(){
 }
 function openForm(pre){
   pre=pre||{};
-  ["plate","vin","make","model","hp","km","price_own","price_client","labor","parts","notes"].forEach(function(i){$(i).value=pre[i]==null?"":pre[i]});
+  ["plate","vin","customer_name","customer_phone","make","model","hp","km","price_own","price_client","labor","parts","notes"].forEach(function(i){$(i).value=pre[i]==null?"":pre[i]});
   $("date").value=pre.date||new Date().toISOString().slice(0,10);
   editId=pre.id||null;$("ft").textContent=editId?"Редакция на ремонт":"Нов ремонт";$("serr").textContent="";checkFields();
   dlg.showModal();
@@ -210,7 +222,7 @@ async function save(){
   var p=normPlate($("plate").value), v=normVin($("vin").value);
   if(!p&&!v){$("serr").textContent="Въведете рег. номер или VIN.";return}
   var rec={
-    plate:p||null,vin:v||null,make:$("make").value.trim()||null,model:$("model").value.trim()||null,hp:num("hp",true),date:$("date").value||null,
+    plate:p||null,vin:v||null,customer_name:$("customer_name").value.trim()||null,customer_phone:$("customer_phone").value.trim()||null,make:$("make").value.trim()||null,model:$("model").value.trim()||null,hp:num("hp",true),date:$("date").value||null,
     km:$("km").value===""?null:parseInt($("km").value,10),
     price_own:num("price_own"),price_client:num("price_client"),labor:num("labor"),
     parts:$("parts").value.trim()||null,notes:$("notes").value.trim()||null
@@ -249,11 +261,11 @@ function render(){
   }
   $("list").innerHTML=order.map(function(k){
     var g=groups[k].slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||(b.km||0)-(a.km||0)});
-    var plate=first(g,"plate"), vin=first(g,"vin"), car=[first(g,"make"),first(g,"model")].filter(Boolean).join(" "), hp=first(g,"hp");
+    var plate=first(g,"plate"), vin=first(g,"vin"), car=[first(g,"make"),first(g,"model")].filter(Boolean).join(" "), hp=first(g,"hp"), cn=first(g,"customer_name"), cp=first(g,"customer_phone");
     var maxKm=g.reduce(function(m,r){return r.km!=null&&r.km>m?r.km:m},0);
     var sum=g.reduce(function(s,r){return s+(Number(r.price_client)||0)+(Number(r.labor)||0)},0);
     var head='<div class="vh">'+(plate?'<div class="plate"><i>BG</i><span>'+esc(fmtPlate(plate))+'</span></div>':'')
-      +'<div>'+(car?'<div class="vn">'+esc(car)+'</div>':'')+((vin||hp)?'<div class="vm">'+esc([hp?hp+" к.с.":"",vin].filter(Boolean).join(" · "))+'</div>':'')+'</div><span class="sp"></span>'
+      +'<div>'+(car?'<div class="vn">'+esc(car)+'</div>':'')+((vin||hp)?'<div class="vm">'+esc([hp?hp+" к.с.":"",vin].filter(Boolean).join(" · "))+'</div>':'')+((cn||cp)?'<div class="cu">'+(cn?'👤 '+esc(cn):'')+(cn&&cp?' · ':'')+(cp?'<a href="tel:'+esc(cp.replace(/[^\d+]/g,""))+'">📞 '+esc(cp)+'</a>':'')+'</div>':'')+'</div><span class="sp"></span>'
       +'<div class="vr">'+(maxKm?'<b>'+esc(km(maxKm))+'</b>':'')+g.length+' рем.'+(sum?' · '+esc(money(sum)):'')+'</div></div>';
     var body=g.map(function(r){
       var parts=r.parts?r.parts.split(/\n+/).filter(Boolean).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join(""):"";
@@ -271,7 +283,7 @@ $("list").addEventListener("click",function(e){
   else if(t.dataset.d)remove(t.dataset.d);
   else if(t.dataset.n!=null){
     var g=groupsCache[t.dataset.n]||[];
-    openForm({plate:first(g,"plate"),vin:first(g,"vin"),make:first(g,"make"),model:first(g,"model"),hp:first(g,"hp")});
+    openForm({plate:first(g,"plate"),vin:first(g,"vin"),customer_name:first(g,"customer_name"),customer_phone:first(g,"customer_phone"),make:first(g,"make"),model:first(g,"model"),hp:first(g,"hp")});
   }
 });
 $("q").addEventListener("input",render);
